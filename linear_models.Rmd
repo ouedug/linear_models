@@ -68,5 +68,32 @@ fit |>
   knitr::kable(digits = 3)
 ```
 
+# Quick look at diagnostics
 
+```{r}
+nyc_airbnb |> 
+  modelr::add_residuals(fit) |> 
+  ggplot(aes(x = borough, y = resid)) + 
+  geom_point() 
+
+```
+
+## hypothesis test for categorical predictor
+
+fit a "null" and "alternative" model
+
+```{r}
+fit_null = lm(price ~ stars + borough, data = nyc_airbnb)
+fit_alt = lm(price ~ stars + borough + room_type, data = nyc_airbnb)
+
+anova(fit_null, fit_alt) |> 
+  broom::tidy()
+
+```
+
+## 
+
+```{r}
+
+```
 
