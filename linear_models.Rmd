@@ -1,0 +1,72 @@
+---
+title: "linear_models"
+author: "Susie Dong"
+date: "2023-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(p8105.datasets)
+
+set.seed(1)
+```
+
+## R Markdown
+
+```{r}
+data("nyc_airbnb")
+
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(stars = review_scores_location / 2) |> 
+  rename(
+    borough = neighbourhood_group,
+    neighborhood = neighbourhood) |> 
+  filter(borough != "Staten Island") |> 
+  select(price, stars, borough, neighborhood, room_type)
+```
+
+
+```{r}
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
+```
+
+```{r}
+nyc_airbnb = 
+  nyc_airbnb |> 
+  mutate(
+    borough = fct_infreq(borough),
+    room_type = fct_infreq(room_type))
+
+fit = lm(price ~ stars + borough, data = nyc_airbnb)
+```
+
+
+
+```{r}
+summary(fit)
+summary(fit)$coef
+coef(fit)
+# fitted.values(fit)
+```
+
+tidy up the output instead
+
+```{r}
+fit |> 
+  broom::glance()
+```
+
+tidy up the coefficients\
+
+```{r}
+fit |> 
+  broom::tidy() |> 
+  mutate(term = str_replace(term, "^borough", "Borough: ")) |> 
+  select(term, estimate, p.value) |> 
+  knitr::kable(digits = 3)
+```
+
+
+
